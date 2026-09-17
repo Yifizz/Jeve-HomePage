@@ -133,7 +133,7 @@ export function PartnersOrbitHero() {
           ))}
         </div>
       </div>
-      <div className="partner-orbit-mobile" aria-label="I partner principali">
+      <div className="partner-orbit-mobile" aria-label="I nostri partner">
         {orbitItems.map(({ main }, i) => (
           <motion.div key={main} initial={{ opacity: 0, scale: 0.2, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={reduceMotion ? { duration: 0 } : { ...popTransition, delay: 0.3 + i * 0.2 }}>
           <a href={`#partner-principale-${main}`} className="partner-orbit-logo partner-orbit-logo-main" aria-label={`Scopri ${principalPartners[main].label}`} style={{ "--orbit-drift-duration": `${8 + i * 0.8}s`, "--orbit-drift-delay": `${1.3 + i * 0.3}s` } as CSSProperties}>
