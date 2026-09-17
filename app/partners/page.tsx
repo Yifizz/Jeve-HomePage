@@ -53,10 +53,10 @@ export default function PartnersPage() {
         <section className="section partner-detail-section" id="partner-principali" aria-labelledby="principal-partners-title">
           <div className="section-heading">
             <div>
-              <p className="section-label">I nostri partner principali</p>
+              <p className="section-label">I nostri partner</p>
               <PartnerTextReveal as="h2" id="principal-partners-title">Insieme, per<br /><em>andare oltre.</em></PartnerTextReveal>
             </div>
-            <p>Quattro realtà con cui condividiamo competenze, visione e opportunità. I partner principali della nostra crescita.</p>
+            <p>Realtà con cui condividiamo competenze, visione e opportunità, costruendo relazioni che generano valore per studenti e imprese.</p>
           </div>
           <div className="partner-principal-grid">
             {principalPartners.map((partner, i) => (

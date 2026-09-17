@@ -2813,11 +2813,43 @@ em {
   }
 
   .contact-reveal-scene {
-    height: 190svh;
+    height: auto;
+    background: var(--red);
   }
 
   .contact-reveal-sticky {
+    position: relative;
+    height: auto;
     min-height: 600px;
+    background: var(--red);
+  }
+
+  /* Keep the final mobile state visible even before hydration. */
+  .contact-reveal-scene .contact-reveal-mask {
+    position: absolute;
+    min-height: 0;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    will-change: auto;
+  }
+
+  .contact-reveal-scene .contact-copy-overlay {
+    position: relative;
+    min-height: 600px;
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    will-change: auto;
+  }
+
+  .contact-reveal-scene .contact-completion-surface,
+  .contact-reveal-scene .contact-orbit {
+    opacity: 1 !important;
+  }
+
+  .contact-reveal-scene .contact-grid {
+    opacity: 0.12 !important;
   }
 
   .contact-copy h2 {

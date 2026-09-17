@@ -8,14 +8,26 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const tigerMask = "url('/jeve-tiger-mask.png')";
 
 export function ContactRevealSection() {
   const sceneRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLElement | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const reduceMotion = useReducedMotion();
+  const staticSection = isMobile || reduceMotion;
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia("(max-width: 760px)");
+    const updateMobile = () => setIsMobile(mobileQuery.matches);
+
+    updateMobile();
+    mobileQuery.addEventListener("change", updateMobile);
+    return () => mobileQuery.removeEventListener("change", updateMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: sceneRef,
     offset: ["start start", "end end"],
@@ -76,6 +88,36 @@ export function ContactRevealSection() {
 
   useEffect(() => {
     headerRef.current = document.querySelector<HTMLElement>(".site-header");
+
+    if (isMobile) {
+      let frame: number | null = null;
+      const updateHeader = () => {
+        frame = null;
+        const scene = sceneRef.current?.getBoundingClientRect();
+        const header = headerRef.current?.getBoundingClientRect();
+        if (!scene || !header) return;
+
+        const headerCenter = header.top + header.height / 2;
+        headerRef.current?.classList.toggle(
+          "is-on-contact",
+          scene.top <= headerCenter && scene.bottom > headerCenter,
+        );
+      };
+      const scheduleUpdate = () => {
+        if (frame === null) frame = requestAnimationFrame(updateHeader);
+      };
+
+      updateHeader();
+      window.addEventListener("scroll", scheduleUpdate, { passive: true });
+      window.addEventListener("resize", scheduleUpdate);
+      return () => {
+        window.removeEventListener("scroll", scheduleUpdate);
+        window.removeEventListener("resize", scheduleUpdate);
+        if (frame !== null) cancelAnimationFrame(frame);
+        headerRef.current?.classList.remove("is-on-contact");
+      };
+    }
+
     headerRef.current?.classList.toggle(
       "is-on-contact",
       scrollYProgress.get() >= 0.58,
@@ -84,10 +126,12 @@ export function ContactRevealSection() {
     return () => {
       headerRef.current?.classList.remove("is-on-contact");
     };
-  }, [scrollYProgress]);
+  }, [isMobile, scrollYProgress]);
 
   useMotionValueEvent(scrollYProgress, "change", (progress) => {
-    headerRef.current?.classList.toggle("is-on-contact", progress >= 0.58);
+    if (!isMobile) {
+      headerRef.current?.classList.toggle("is-on-contact", progress >= 0.58);
+    }
   });
 
   return (
@@ -95,13 +139,13 @@ export function ContactRevealSection() {
       <div className="contact-reveal-sticky">
         <motion.div
           className="contact-completion-surface"
-          style={{ opacity: reduceMotion ? 1 : completionOpacity }}
+          style={{ opacity: staticSection ? 1 : completionOpacity }}
           aria-hidden="true"
         />
         <motion.div
           className="contact-section contact-reveal-mask"
           style={
-            reduceMotion
+            staticSection
               ? undefined
               : {
                   WebkitMaskImage: tigerMask,
@@ -115,12 +159,12 @@ export function ContactRevealSection() {
         >
           <motion.div
             className="contact-orbit"
-            style={{ opacity: reduceMotion ? 1 : detailsOpacity }}
+            style={{ opacity: staticSection ? 1 : detailsOpacity }}
             aria-hidden="true"
           />
           <motion.div
             className="contact-grid"
-            style={{ opacity: reduceMotion ? 0.12 : gridOpacity }}
+            style={{ opacity: staticSection ? 0.12 : gridOpacity }}
             aria-hidden="true"
           >
             <span />
@@ -134,11 +178,11 @@ export function ContactRevealSection() {
         <motion.div
           className="contact-copy contact-copy-overlay"
           style={{
-            opacity: reduceMotion ? 1 : copyOpacity,
-            filter: reduceMotion ? "none" : copyFilter,
-            y: reduceMotion ? 0 : copyY,
-            scale: reduceMotion ? 1 : copyScale,
-            pointerEvents: reduceMotion ? "auto" : copyPointerEvents,
+            opacity: staticSection ? 1 : copyOpacity,
+            filter: staticSection ? "none" : copyFilter,
+            y: staticSection ? 0 : copyY,
+            scale: staticSection ? 1 : copyScale,
+            pointerEvents: staticSection ? "auto" : copyPointerEvents,
           }}
         >
           <p className="section-label section-label-light">
